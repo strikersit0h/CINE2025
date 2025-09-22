@@ -37,31 +37,47 @@ function seleccionarPeli(){
             vendidas=aVendidas2.slice(0,aVendidas2.length);
             break;
     }
-    pintarButacas();    
+    pintarButacas();
+    comprobarOcupacion();    
 }
 
 /*Se dibujan las localidades de la sala diferenciando si están disponibles o no  */
 function pintarButacas(){
-    contenedor.innerHTML="<br>";
-    contenedor.innerHTML+="<h3>SALA DE CINE</h3>"
-    for (i=1;i<=numButacas;i++){
-            if (vendidas.includes(i)){
-                contenedor.innerHTML+="<button id='butaca"+i+"' class='ocupado'>"+i+"</button> ";
-            }
-            else{
-                contenedor.innerHTML+="<button id='butaca"+i+"' class='libre' onclick='seleccionar();' title='Seleccionar asiento'>"+i+"</button> ";
-            }
-            if (i%15==0){
-                contenedor.innerHTML+="<br>";
-            }
-        }
-        if (numButacas==vendidas.length){
-            contenedor.innerHTML+="<br><img  src='img/soldout.png' alt='Sin localidades'title='Localidades agotadas. Seleccione otra película.'>"
+    contenedor.innerHTML = "<br>";
+    contenedor.innerHTML += "<h3>SALA DE CINE</h3>";
+    for (i=1; i<=numButacas; i++){
+        if (vendidas.includes(i)){
+            contenedor.innerHTML += "<button id='butaca"+i+"' class='ocupado'>"+i+"</button> ";
         }
         else{
-            contenedor.innerHTML+="<br><br><button id='btnConfirm' onclick='confirmarVenta();' title='Comprar entradas'>Comprar</button>"
+            contenedor.innerHTML += "<button id='butaca"+i+"' class='libre' onclick='seleccionar();' title='Seleccionar asiento'>"+i+"</button> ";
         }
+        if (i%15==0){
+            contenedor.innerHTML += "<br>";
+        }
+    }
+
+    if (numButacas==vendidas.length){
+        contenedor.innerHTML += "<br><img src='img/soldout.png' alt='Sin localidades' title='Localidades agotadas. Seleccione otra película.'>";
+    }
+    else{
+        contenedor.innerHTML += "<br><br><button id='btnConfirm' onclick='confirmarVenta();' title='Comprar entradas'>Comprar</button>";
+    }
+
+    // 👉 Aquí añadimos el warning banner dentro del contenedor
+    contenedor.innerHTML += `
+        <div id="warningBanner" 
+             style="margin-top:20px; background:#d9534f; color:#fff; font-weight:bold;
+                    padding:12px 20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.3);
+                    display:none; text-align:center; max-width:500px; margin-left:auto; margin-right:auto;">
+            ⚠️ WARNING: Ocupación superior al 50%, apresúrate a reservar
+        </div>
+    `;
+
+    // refrescamos comprobación
+    comprobarOcupacion();
 }
+
 
 /*Cuando se selecciona una localidad se comprueba si esta libre y se guarda o se borra
 de los arrays de control*/
@@ -128,4 +144,13 @@ function imprimirTicket(){
     var miEntrada=window.open("ticket.html",'Ticket',params)
     
 }
-    
+
+function comprobarOcupacion(){
+    var porcentaje = (vendidas.length / numButacas) * 100;
+    var banner = document.getElementById("warningBanner");
+    if (porcentaje > 50){
+        banner.style.display = "block";
+    } else {
+        banner.style.display = "none";
+    }
+}
